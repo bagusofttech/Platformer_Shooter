@@ -11,7 +11,7 @@ public class PerkSystem : MonoBehaviour
     public GameObject[] perkCardsToSpawn;
 
     public List<GameObject> possiblePerkCards = new List<GameObject>();
-
+    public List<int> selectedPerks = new List<int>();
     private static System.Random _randomNumber = new System.Random();
 
     private int currentIndex = 0;
@@ -22,7 +22,9 @@ public class PerkSystem : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        possiblePerkCards = perkCardsToSpawn.OrderBy(a => _randomNumber.Next()).ToList();
+        possiblePerkCards = perkCardsToSpawn
+            .Where(a => !selectedPerks.Contains(a.GetComponent<ChoosePerk>().perkId))
+            .OrderBy(a => _randomNumber.Next()).ToList();
         SpawnPerkCards();
     }
 
@@ -38,7 +40,19 @@ public class PerkSystem : MonoBehaviour
             if (Input.GetMouseButtonDown(0))
             {
                 Debug.Log("Click on " + hit.collider.gameObject.name);
-                GameControl.gameControl.selectedPerks.Add(hit.collider.gameObject);
+
+                if (GameControl.gameControl != null)
+                {
+                    GameControl.gameControl.selectedPerks.Add(hit.collider.gameObject);
+                }
+
+                // keep track of what the player has selected
+                if (hit.collider.gameObject?.GetComponent<ChoosePerk>()?.perkId is int id &&
+                    !selectedPerks.Contains(id))
+                {
+                    selectedPerks.Add(id);
+                }
+
                 //Subtract perkCost from PlayerLevel
                 ///Perk Cards are built as scriptable objects and contain the cost of the perk.
                 ///I'd prefer to only have that information in the PerkCards script,
@@ -81,6 +95,7 @@ public class PerkSystem : MonoBehaviour
                         remainingPerkCards.Add(possiblePerkCards[i]);
                     }
                 }
+
                 if (remainingPerkCards.Any())
                 {
                     possiblePerkCards = remainingPerkCards.OrderBy(a => _randomNumber.Next()).ToList();

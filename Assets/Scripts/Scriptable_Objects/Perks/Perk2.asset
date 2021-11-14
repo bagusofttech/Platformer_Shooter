@@ -13,3 +13,4 @@ MonoBehaviour:
   m_Name: Perk2
   m_EditorClassIdentifier: 
   perkCost: 2
+  perkId: 200

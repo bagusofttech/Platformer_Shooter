@@ -6,4 +6,6 @@ using UnityEngine;
 public class PerkCards : ScriptableObject
 {
     public int perkCost;
+
+    public int perkId;
 }
